@@ -254,7 +254,7 @@ async function createjson(_gameid, _json) {
 
 
 
-async function fetchPriceOracle() {
+async function fetchPriceOracle(price) {
 
 
 
@@ -414,6 +414,17 @@ app.get('/execute', async (req, res) => {
       res.status(500).json({ error: error.toString() });
     }
   });
+
+  app.get('/fetch/:price', async (req, res) => {
+    try {
+      const price = req.params.price; // Get the price parameter from URL
+      const data = await fetchPriceOracle(price); // Pass it to your function
+      res.json({ data: data });
+    }
+    catch (error) {
+      res.status(500).json({ error: error.toString() });
+    }
+});
 
 
   app.get('/stop', async (req, res) => {
