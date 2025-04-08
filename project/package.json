@@ -1,7 +1,7 @@
 {
   "name": "project",
   "version": "1.0.0",
-"main": "project/index.js",
+"main": "project/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -10,6 +10,9 @@
   "license": "ISC",
     "engines": {
     "node": "21"
+  },
+    "scripts": {
+    "start": "node app.js"
   },
   "description": "",
   "dependencies": {
