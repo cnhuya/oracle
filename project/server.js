@@ -275,7 +275,7 @@ async function fetchPriceOracle(price) {
     "oraclev5",
     "fetchPrice",
     [],
-    [BCS.bcsSerializeUint32(price) ,]
+    [BCS.bcsSerializeU32(price) ,]
   );
   TX = supraCoinTransferRawTransaction;
   console.log("not await", TX);
