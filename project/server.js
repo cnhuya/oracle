@@ -122,17 +122,17 @@ async function fetchPrice(krypto) {
         let decimals;
         switch(krypto){
           case "BTC":
-              module_name = "btc_pricev3";
+              module_name = "Bitcoin";
               decimals = 1;
               number_in_list = 0;
               break;
           case "ETH":
-              module_name = "eth_price";
+              module_name = "Ethereum";
               decimals = 2;
               number_in_list = 1;
               break;
           case "SOL":
-              module_name = "sol_price";
+              module_name = "Solana";
               decimals = 2;
               number_in_list = 2;
               break;
