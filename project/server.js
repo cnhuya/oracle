@@ -264,8 +264,8 @@ async function fetchPriceOracle(price) {
   // Create the serialized raw transaction
 
 
-  let data = getBybitTestnetSpotPrice();
-  let price = (await data).lastPrice;
+ // let data = getBybitTestnetSpotPrice();
+  //let price = (await data).lastPrice;
   let supraCoinTransferRawTransaction = await newClient.createRawTxObject(
     senderAddr.address(),
     (
