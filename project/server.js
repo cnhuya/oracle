@@ -8,6 +8,37 @@ const axios = require('axios');
 const POLL_INTERVAL_MS = 5000; // 5 seconds
 const SYMBOL = 'ETHUSDT';
 
+
+const newClient = new SupraClient("https://rpc-testnet.supra.com", 6);
+const senderAddr = new SupraAccount();
+//const receiver = new HexString(receiverAddr); // remove this, not needed anymore.
+// the address of the contract whose function is being invoked
+const contractAddress = "0xc698c251041b826f1d3d4ea664a70674758e78918938d1b3b237418ff17b4020";
+const bufferToSign = new Uint8Array([21]);
+const types = TxnBuilderTypes;
+
+//debuging
+console.log("senderAddr:", senderAddr);
+console.log("contractAddress:", contractAddress);
+
+const high = BCS.bcsSerializeStr("Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. N");
+console.log("THIS IS A SERIALIZED STRING")
+console.log(high);
+
+
+let TX;
+let initial_TX;
+
+console.log("buffer to sign:", bufferToSign)
+
+let xa = {
+    Ed25519: {
+        public_key: senderAddr.pubKey().toString(),
+        signature: senderAddr.signBuffer(bufferToSign).toString()
+    }
+};
+
+
 // 1. Price Fetching Function (using axios)
 async function getBybitTestnetSpotPrice(symbol = SYMBOL) {
   try {
@@ -93,34 +124,6 @@ function stopOracleService() {
       console.error('Failed to start oracle service:', error);
   }
 })();
-const newClient = new SupraClient("https://rpc-testnet.supra.com", 6);
-const senderAddr = new SupraAccount();
-//const receiver = new HexString(receiverAddr); // remove this, not needed anymore.
-// the address of the contract whose function is being invoked
-const contractAddress = "0xc698c251041b826f1d3d4ea664a70674758e78918938d1b3b237418ff17b4020";
-const bufferToSign = new Uint8Array([21]);
-const types = TxnBuilderTypes;
-
-//debuging
-console.log("senderAddr:", senderAddr);
-console.log("contractAddress:", contractAddress);
-
-const high = BCS.bcsSerializeStr("Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. N");
-console.log("THIS IS A SERIALIZED STRING")
-console.log(high);
-
-
-let TX;
-let initial_TX;
-
-console.log("buffer to sign:", bufferToSign)
-
-let xa = {
-    Ed25519: {
-        public_key: senderAddr.pubKey().toString(),
-        signature: senderAddr.signBuffer(bufferToSign).toString()
-    }
-};
 
 
 
