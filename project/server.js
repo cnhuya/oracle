@@ -39,7 +39,7 @@ let xa = {
 };
 
 
-// 1. Price Fetching Function (using axios)
+/*// 1. Price Fetching Function (using axios)
 async function getBybitTestnetSpotPrice(symbol = SYMBOL) {
   try {
       const url = `https://api-testnet.bybit.com/v5/market/tickers?category=spot&symbol=${symbol}`;
@@ -125,7 +125,7 @@ function stopOracleService() {
   }
 })();
 
-
+*/
 
 
 
