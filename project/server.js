@@ -124,17 +124,17 @@ async function fetchPrice(krypto) {
           case "BTC":
               module_name = "btc_pricev3";
               decimals = 1;
-              number_in_list = 1;
+              number_in_list = 0;
               break;
           case "ETH":
               module_name = "eth_price";
               decimals = 2;
-              number_in_list = 2;
+              number_in_list = 1;
               break;
           case "SOL":
               module_name = "sol_price";
               decimals = 2;
-              number_in_list = 3;
+              number_in_list = 2;
               break;
         }
 
