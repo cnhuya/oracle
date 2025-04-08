@@ -3,7 +3,96 @@ const cors = require('cors');
 const{ HexString, SupraAccount, SupraClient, BCS, TxnBuilderTypes } = require("supra-l1-sdk");
 const { serialize } = require('v8');
 
+const axios = require('axios');
 
+const POLL_INTERVAL_MS = 5000; // 5 seconds
+const SYMBOL = 'ETHUSDT';
+
+// 1. Price Fetching Function (using axios)
+async function getBybitTestnetSpotPrice(symbol = SYMBOL) {
+  try {
+      const url = `https://api-testnet.bybit.com/v5/market/tickers?category=spot&symbol=${symbol}`;
+      const response = await axios.get(url);
+
+      if (response.data.retCode !== 0) {
+          throw new Error(`API error: ${response.data.retMsg}`);
+      }
+
+      if (!response.data.result.list || response.data.result.list.length === 0) {
+          throw new Error('No data returned for symbol');
+      }
+
+      return response.data.result.list[0].lastPrice;
+  } catch (error) {
+      console.error('Error fetching price:', error.message);
+      throw error;
+  }
+}
+
+// 2. Oracle Update Function
+async function fetchPriceOracle() {
+  try {
+      console.log("Fetching latest price...");
+      
+      // Get current price
+      const price = await getBybitTestnetSpotPrice();
+      console.log(`Current ${SYMBOL} price:`, price);
+      
+      // Create transaction (adapt to your actual Supra SDK)
+      const receiverAddress = new SupraAccount();
+      const supraCoinTransferRawTransaction = await newClient.createRawTxObject(
+          senderAddr.address(),
+          (await newClient.getAccountInfo(senderAddr.address())).sequence_number,
+          contractAddress,
+          "oraclev5",
+          "fetchPrice",
+          [],
+          [BCS.bcsSerializeUint32(price)]
+      );
+      
+      console.log("Transaction prepared:", supraCoinTransferRawTransaction);
+      
+      // Here you would typically submit the transaction
+      // await newClient.submitTx(supraCoinTransferRawTransaction);
+      
+  } catch (error) {
+      console.error('Error in oracle update:', error);
+  }
+}
+
+// 3. Periodic Execution
+let intervalId;
+
+function startOracleService(intervalMs = POLL_INTERVAL_MS) {
+  console.log(`Starting oracle service (updating every ${intervalMs/1000} seconds)...`);
+  
+  // Initial immediate execution
+  fetchPriceOracle();
+  
+  // Set up periodic execution
+  intervalId = setInterval(fetchPriceOracle, intervalMs);
+}
+
+function stopOracleService() {
+  if (intervalId) {
+      clearInterval(intervalId);
+      console.log('Oracle service stopped');
+  }
+}
+
+// Example Usage
+(async () => {
+  try {
+      // Start the service
+      startOracleService();
+      
+      // To stop after some time (for demonstration)
+      // setTimeout(stopOracleService, 30000);
+      
+  } catch (error) {
+      console.error('Failed to start oracle service:', error);
+  }
+})();
 const newClient = new SupraClient("https://rpc-testnet.supra.com", 6);
 const senderAddr = new SupraAccount();
 //const receiver = new HexString(receiverAddr); // remove this, not needed anymore.
@@ -162,8 +251,7 @@ async function createjson(_gameid, _json) {
 
 
 
-async function createOHCLTX() {
-
+async function fetchPriceOracle() {
 
 
 
@@ -176,17 +264,18 @@ async function createOHCLTX() {
   // Create the serialized raw transaction
 
 
-
+  let data = getBybitTestnetSpotPrice();
+  let price = (await data).lastPrice;
   let supraCoinTransferRawTransaction = await newClient.createRawTxObject(
     senderAddr.address(),
     (
       await newClient.getAccountInfo(senderAddr.address())
     ).sequence_number,
     contractAddress,
-    "numba9",
-    "numbas",
+    "oraclev5",
+    "fetchPrice",
     [],
-    [BCS.bcsSerializeUint64(10000) , BCS.bcsSerializeUint64(500)]
+    [BCS.bcsSerializeUint32(price) ,]
   );
   TX = supraCoinTransferRawTransaction;
   console.log("not await", TX);
@@ -316,10 +405,20 @@ app.get('/execute', async (req, res) => {
     }
   });
 
-
-  app.get('/multi', async (req, res) => {
+  app.get('/start', async (req, res) => {
     try {
-      const data = await TRIPLETEST();
+      const data = await startOracleService();
+      res.json({ data: data });
+     }
+    catch (error) {
+      res.status(500).json({ error: error.toString() });
+    }
+  });
+
+
+  app.get('/stop', async (req, res) => {
+    try {
+      const data = await stopOracleService();
       res.json({ data: data });
      }
     catch (error) {
