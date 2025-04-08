@@ -9,11 +9,15 @@ const https = require('https');
 async function getPriceBybit(krypto) {
   return new Promise((resolve, reject) => {
     const options = {
-      hostname: 'api.bybit.com',
-      path: `/v5/market/tickers?category=spot&symbol=${krypto}USDT`,
+      hostname: 'hermes.pyth.network',
+      //path: `/v5/market/tickers?category=spot&symbol=${krypto}USDT`,
+      path: `https://hermes.pyth.network/v2/updates/price/latest?ids%5B%5D=0xe62df6c8b4a85fe1a67db44dc12de5db330f7ac66b72dc658afedf0f4a415b43&ids%5B%5D=0xc96458d393fe9deb7a7d63a0ac41e2898a67a7750dbd166673279e06c868df0a`,
+      
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'User-Agent': 'Node.js/18.0', // Required by many APIs
+        'Accept': 'application/json'
       }
     };
 
@@ -26,6 +30,7 @@ async function getPriceBybit(krypto) {
 
       res.on('end', () => {
         try {
+          console.log(data);
           const parsedData = JSON.parse(data);
           console.log(parsedData);
           resolve(parsedData);
@@ -131,11 +136,13 @@ async function fetchPrice(krypto) {
         }
 
         let data = await getPriceBybit(krypto);
-        let lastPrice = data.result.list[0].lastPrice;
-        console.log("Last price:", lastPrice);
+        //let lastPrice = data.result.list[0].lastPrice;
+        let priceData = data.parsed[0].price;
+        let correct_lastPrice = parseFloat(priceData.price) * Math.pow(10, priceData.expo+1);
+        console.log("Last price:", correct_lastPrice);
 
         // Convert price to proper format for BCS serialization
-        const priceValue = parseFloat(lastPrice);
+        const priceValue = parseFloat(correct_lastPrice);
         if (isNaN(priceValue)) {
             throw new Error("Invalid price value received");
         }
