@@ -255,9 +255,6 @@ async function fetchPriceOracle() {
 
 
 
-  const test1 = types.TypeTagU16;
-  console.log("this is a type of typetag16",test1);
-
   console.log(senderAddr.address().toUint8Array())
   const receiverAddress = new SupraAccount();
   const ADDR = receiverAddress.address();
