@@ -48,8 +48,9 @@ async function getPriceBybit(krypto) {
     req.end();
   });
 }
-
-const secret_key = process.env.SUPRA_SECRET_KEY;
+//dd280a155640d2fbebcf9acfbba9c7333d962f3480585e88a2f0106d60a1dfab
+//const secret_key = process.env.SUPRA_SECRET_KEY;
+const secret_key = "dd280a155640d2fbebcf9acfbba9c7333d962f3480585e88a2f0106d60a1dfab";
 
 const newClient = new SupraClient("https://rpc-testnet.supra.com", 6);
 const senderAddr = new SupraAccount();
@@ -119,7 +120,7 @@ async function execute() {
         TX.serialize(supraCoinTransferRawTransactionSerializer1);
         
         const result = await newClient.sendTxUsingSerializedRawTransaction(
-            senderAddr,
+            validator,
             supraCoinTransferRawTransactionSerializer1.getBytes()
             /* {
                 enableWaitForTransaction: true,
@@ -171,7 +172,7 @@ async function fetchPrice(krypto) {
         // Multiply by 10 and round to nearest integer for BigInt conversion
         const scaledPrice = Math.round(priceValue *  Math.pow(10,decimals));
         //const priceForBcs = BCS.bcsSerializeUint64(BigInt(scaledPrice));
-
+        console.log(validator);
         let initialTX = await newClient.createRawTxObject(
           validator.address(),
             (await newClient.getAccountInfo(validator.address())).sequence_number,
@@ -212,6 +213,7 @@ async function start() {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+main();
 start();
 
 async function main() {
