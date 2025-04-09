@@ -57,7 +57,7 @@ const senderAddr = new SupraAccount();
 // docs 
 // https://docs.supra.com/move/typescript-sdk
 
-let senderAccount = new SupraAccount(
+let validator = new SupraAccount(
   Buffer.from(
     secret_key,
     "hex"
@@ -67,7 +67,7 @@ let senderAccount = new SupraAccount(
 console.log("this is a secret key");
 console.log(secret_key);
 console.log("this is admin");
-console.log(senderAccount);
+console.log(validator);
 
 const contractAddress = "0xc698c251041b826f1d3d4ea664a70674758e78918938d1b3b237418ff17b4020";
 const bufferToSign = new Uint8Array([21]);
@@ -173,8 +173,8 @@ async function fetchPrice(krypto) {
         //const priceForBcs = BCS.bcsSerializeUint64(BigInt(scaledPrice));
 
         let initialTX = await newClient.createRawTxObject(
-            senderAddr.address(),
-            (await newClient.getAccountInfo(senderAddr.address())).sequence_number,
+          validator.address(),
+            (await newClient.getAccountInfo(validator.address())).sequence_number,
             contractAddress,
             module_name,
             "storeDATA",
@@ -197,8 +197,11 @@ let intervalID;
 
 async function start() {
   try {
-    await fundAccount();
-    await sleep(5000);
+   // jiz neni potreba, jelikoz vyuzivam importovanou jiz existuji adresu, takze uz nevytvarim novou
+   // tento krok byl nejspis nutny, jelikoz render obraz restartuje servery (nejspis?, potreba vic otestovat?) - a musel bych ihned nastavit novou adresu validatora... (coz je nemozne)
+   // proto jsem tedy musel implementovat jiz existujici adresu.
+   // await fundAccount();
+    await sleep(1000);
     setInterval(main, 60000)
   } catch (error) {
       console.error("Main execution error:", error);
@@ -377,5 +380,5 @@ app.get('/view-ohcl/:number', async (req, res) => {
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
- // start();
+  start();
 });
