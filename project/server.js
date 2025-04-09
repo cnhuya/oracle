@@ -48,8 +48,26 @@ async function getPriceBybit(krypto) {
     req.end();
   });
 }
+
+const secret_key = process.env.SUPRA_SECRET_KEY;
+
 const newClient = new SupraClient("https://rpc-testnet.supra.com", 6);
 const senderAddr = new SupraAccount();
+
+// docs 
+// https://docs.supra.com/move/typescript-sdk
+
+let senderAccount = new SupraAccount(
+  Buffer.from(
+    secret_key,
+    "hex"
+  )
+);
+
+console.log("this is a secret key");
+console.log(secret_key);
+console.log("this is admin");
+console.log(senderAccount);
 
 const contractAddress = "0xc698c251041b826f1d3d4ea664a70674758e78918938d1b3b237418ff17b4020";
 const bufferToSign = new Uint8Array([21]);
@@ -179,6 +197,8 @@ let intervalID;
 
 async function start() {
   try {
+    await fundAccount();
+    await sleep(5000);
     setInterval(main, 60000)
   } catch (error) {
       console.error("Main execution error:", error);
@@ -189,6 +209,7 @@ async function start() {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+start();
 
 async function main() {
     try {
@@ -356,4 +377,5 @@ app.get('/view-ohcl/:number', async (req, res) => {
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
+ // start();
 });
