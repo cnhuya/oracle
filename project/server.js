@@ -10,17 +10,15 @@ async function getPriceBybit(krypto) {
   return new Promise((resolve, reject) => {
     const options = {
       hostname: 'hermes.pyth.network',
-      //path: `/v5/market/tickers?category=spot&symbol=${krypto}USDT`,
       path: `https://hermes.pyth.network/v2/updates/price/latest?ids%5B%5D=0xe62df6c8b4a85fe1a67db44dc12de5db330f7ac66b72dc658afedf0f4a415b43&ids%5B%5D=0xff61491a931112ddf1bd8147cd1b641375f79f5825126d665480874634fd0ace&ids%5B%5D=0xef0d8b6fda2ceba41da15d4095d1da392a0d2f8ed0c6c7bc0f4cfac8c280b56d`,
       
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'User-Agent': 'Node.js/18.0', // Required by many APIs
+        'User-Agent': 'Node.js/18.0', 
         'Accept': 'application/json'
       }
     };
-
     const req = https.request(options, (res) => {
       let data = '';
 
@@ -48,15 +46,13 @@ async function getPriceBybit(krypto) {
     req.end();
   });
 }
-//dd280a155640d2fbebcf9acfbba9c7333d962f3480585e88a2f0106d60a1dfab
-//const secret_key = process.env.SUPRA_SECRET_KEY;
-const secret_key = "dd280a155640d2fbebcf9acfbba9c7333d962f3480585e88a2f0106d60a1dfab";
+
+const secret_key = process.env.SUPRA_SECRET_KEY;
 
 const newClient = new SupraClient("https://rpc-testnet.supra.com", 6);
 const senderAddr = new SupraAccount();
 
-// docs 
-// https://docs.supra.com/move/typescript-sdk
+// docs - https://docs.supra.com/move/typescript-sdk
 
 let validator = new SupraAccount(
   Buffer.from(
@@ -71,7 +67,6 @@ console.log("this is admin");
 console.log(validator);
 
 const contractAddress = "0xc698c251041b826f1d3d4ea664a70674758e78918938d1b3b237418ff17b4020";
-const bufferToSign = new Uint8Array([21]);
 const types = TxnBuilderTypes;
 
 //debuging
@@ -80,28 +75,15 @@ console.log("contractAddress:", contractAddress);
 
 
 
-
-let xa = {
-    Ed25519: {
-        public_key: senderAddr.pubKey().toString(),
-        signature: senderAddr.signBuffer(bufferToSign).toString()
-    }
-};
-
-
-console.log("xa??", xa);
-
 async function fundAccount(){
     let fund = await newClient.fundAccountWithFaucet(senderAddr.address())
 
     let balance = await newClient.getAccountSupraCoinBalance(senderAddr.address())
 
-    console.log("FZND", fund);
-    console.log("BALANCS", balance);
-    console.log("SENDERAD", senderAddr);
+    console.log("FUND", fund);
+    console.log("BALANCE", balance);
+    console.log("ADDR", senderAddr);
 
-    const test = types.TypeTagU128;
-    console.log("this is a type of typetag128",test);
 
     return fund;
 }
@@ -122,10 +104,6 @@ async function execute() {
         const result = await newClient.sendTxUsingSerializedRawTransaction(
             validator,
             supraCoinTransferRawTransactionSerializer1.getBytes()
-            /* {
-                enableWaitForTransaction: true,
-                enableTransactionSimulation: true,
-            }*/
         );
         console.log("Transaction result:", result);
     } catch (error) {
@@ -163,15 +141,12 @@ async function fetchPrice(krypto) {
         let correct_lastPrice = parseFloat(priceData.price) * Math.pow(10, priceData.expo);
         console.log("Last price:", correct_lastPrice);
 
-        // Convert price to proper format for BCS serialization
         const priceValue = parseFloat(correct_lastPrice);
         if (isNaN(priceValue)) {
             throw new Error("Invalid price value received");
         }
 
-        // Multiply by 10 and round to nearest integer for BigInt conversion
         const scaledPrice = Math.round(priceValue *  Math.pow(10,decimals));
-        //const priceForBcs = BCS.bcsSerializeUint64(BigInt(scaledPrice));
         console.log(validator);
         let initialTX = await newClient.createRawTxObject(
           validator.address(),
@@ -192,10 +167,6 @@ async function fetchPrice(krypto) {
     }
 }
 
-let intervalID;
-
-// Example usage:
-
 async function start() {
   try {
    // jiz neni potreba, jelikoz vyuzivam importovanou jiz existuji adresu, takze uz nevytvarim novou
@@ -209,12 +180,11 @@ async function start() {
     }  
   }
 
+
+  // zdroj https://stackoverflow.com/questions/951021/what-is-the-javascript-version-of-sleep
   function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
-
-main();
-start();
 
 async function main() {
     try {
@@ -231,40 +201,13 @@ async function main() {
     }
 }
 
-
-async function viewOhcl(number) {
-
-  const functionFullname =
-    "0xc698c251041b826f1d3d4ea664a70674758e78918938d1b3b237418ff17b4020::priary::view_OHCL";
-  const typeArguments = [];
-  const functionArguments = [
-    "0xc698c251041b826f1d3d4ea664a70674758e78918938d1b3b237418ff17b4020",
-    number.toString(),
-  ];
-
-  try {
-    const result = await newClient.invokeViewMethod( // use newClient
-      functionFullname,
-      typeArguments,
-      functionArguments
-    );
-    console.log("View result:", result);
-    return result;
-  } catch (error) {
-    console.error("Error calling view function:", error);
-    throw error;
-  }
-}
-
-
+// dokumentace - https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Server-side/Express_Nodejs/Introduction
 const app = express();
 const port = 3000;
 app.use(cors());
 app.use(express.static('public'));
 
-
-
-
+// API endpoint pro zakladni funding uctu testnet tokeny
 app.get('/fund', async (req, res) => {
     try {
       const data = await fundAccount();
@@ -274,8 +217,8 @@ app.get('/fund', async (req, res) => {
       res.status(500).json({ error: error.toString() });
     }
   });
-
-  app.get('/REAL', async (req, res) => {
+// API endpoint pro ulozeni cen vsech kryptomen (btc,eth,sol)
+  app.get('/execute', async (req, res) => {
     try {
       const data = await main();
       res.json({ data: data });
@@ -284,7 +227,7 @@ app.get('/fund', async (req, res) => {
       res.status(500).json({ error: error.toString() });
     }
   }); 
-
+// API endpoint pro spusteni nekonecne cyklu, ktery po intervalech uklada ceny vsech kryptomen (btc,eth,sol)
   app.get('/start', async (req, res) => {
     try {
       const data = await start();
@@ -294,93 +237,10 @@ app.get('/fund', async (req, res) => {
       res.status(500).json({ error: error.toString() });
     }
   }); 
-  app.get('/REALOHCL', async (req, res) => {
-    try {
-      const data = await createOHCLTX();
-      res.json({ data: data });
-     }
-    catch (error) {
-      res.status(500).json({ error: error.toString() });
-    }
-  }); 
 
-  app.get('/INITIALIZE', async (req, res) => {
-    try {
-      const data = await initialize();
-      res.json({ data: data });
-     }
-    catch (error) {
-      res.status(500).json({ error: error.toString() });
-    }
-  }); 
-
-app.get('/execute', async (req, res) => {
-    try {
-      const data = await createAndExecuteTransaction();
-      res.json({ data: data });
-     }
-    catch (error) {
-      res.status(500).json({ error: error.toString() });
-    }
-  });
-
-
-  app.get('/multi', async (req, res) => {
-    try {
-      const data = await TRIPLETEST();
-      res.json({ data: data });
-     }
-    catch (error) {
-      res.status(500).json({ error: error.toString() });
-    }
-  });
-
-  app.get('/view-ohcl/:gameID/:json', async (req, res) => {
-    try {
-      const gameID = parseInt(req.params.gameID, 10);
-      const json = req.params.json == null ? "" : String(req.params.json);
-      if (isNaN(gameID)) {
-        res.status(400).json({ error: "Invalid 'number' parameter. Must be an integer." });
-        return;
-      }
-      
-      const data = await createjson(gameID, json); // Changed "number" to "gameID", and added json as a variable
-      res.json({ data: data });
-  
-    } catch (error) {
-      res.status(500).json({ error: error.toString() });
-    }
-  });
-  
-
-  app.get('/executejson', async (req, res) => {
-    try {
-      const data = await executejson();
-      res.json({ data: data });
-     }
-    catch (error) {
-      res.status(500).json({ error: error.toString() });
-    }
-  });
-
-
-app.get('/view-ohcl/:number', async (req, res) => {
-  try {
-    const number = parseInt(req.params.number, 10);
-    if (isNaN(number)) {
-      res.status(400).json({ error: "Invalid 'number' parameter. Must be an integer." });
-      return;
-    }
-    
-
-    const data = await viewOhcl(number);
-    res.json({ data: data });
-  } catch (error) {
-    res.status(500).json({ error: error.toString() });
-  }
-});
-
+  // Dojde pri spusteni serveru, automaticky se zapne start cyklu
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
+  main();
   start();
 });
