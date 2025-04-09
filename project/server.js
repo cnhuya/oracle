@@ -5,7 +5,6 @@ const { serialize } = require('v8');
 const https = require('https');
 
 
-
 async function getPriceBybit(krypto) {
   return new Promise((resolve, reject) => {
     const options = {
@@ -46,7 +45,7 @@ async function getPriceBybit(krypto) {
     req.end();
   });
 }
-
+//const secret_key = "dd280a155640d2fbebcf9acfbba9c7333d962f3480585e88a2f0106d60a1dfab";
 const secret_key = process.env.SUPRA_SECRET_KEY;
 
 const newClient = new SupraClient("https://rpc-testnet.supra.com", 6);
@@ -67,7 +66,6 @@ console.log("this is admin");
 console.log(validator);
 
 const contractAddress = "0xc698c251041b826f1d3d4ea664a70674758e78918938d1b3b237418ff17b4020";
-const types = TxnBuilderTypes;
 
 //debuging
 console.log("senderAddr:", senderAddr);
@@ -173,7 +171,6 @@ async function start() {
    // tento krok byl nejspis nutny, jelikoz render obraz restartuje servery (nejspis?, potreba vic otestovat?) - a musel bych ihned nastavit novou adresu validatora... (coz je nemozne)
    // proto jsem tedy musel implementovat jiz existujici adresu.
    // await fundAccount();
-    await sleep(1000);
     setInterval(main, 60000)
   } catch (error) {
       console.error("Main execution error:", error);
