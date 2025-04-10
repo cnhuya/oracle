@@ -1,9 +1,9 @@
 {
   "name": "project",
   "version": "1.0.0",
-  "main": "server.js",  // Remove "project/" if server.js is in root
+  "main": "project/server.js",  // Remove "project/" if server.js is in root
   "scripts": {
-    "start": "node server.js",  // Or "node app.js" if needed
+    "start": "node project/server.js",  // Or "node app.js" if needed
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
