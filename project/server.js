@@ -5,7 +5,7 @@ const { serialize } = require('v8');
 const https = require('https');
 
 
-async function getPriceBybit(krypto) {
+async function getPriceBybit() {
   return new Promise((resolve, reject) => {
     const options = {
       hostname: 'hermes.pyth.network',
@@ -45,8 +45,8 @@ async function getPriceBybit(krypto) {
     req.end();
   });
 }
-//const secret_key = "dd280a155640d2fbebcf9acfbba9c7333d962f3480585e88a2f0106d60a1dfab";
-const secret_key = process.env.SUPRA_SECRET_KEY;
+const secret_key = "0e67c6a62d530e9f86d865f4ad76ebc11d6d67b5d28e25d9dc31e4099e490125";
+//const secret_key = process.env.SUPRA_SECRET_KEY;
 
 const newClient = new SupraClient("https://rpc-testnet.supra.com", 6);
 const senderAddr = new SupraAccount();
@@ -65,7 +65,7 @@ console.log(secret_key);
 console.log("this is admin");
 console.log(validator);
 
-const contractAddress = "0xc698c251041b826f1d3d4ea664a70674758e78918938d1b3b237418ff17b4020";
+const contractAddress = "0x8480994b8cdeb0b3c6136dcc65edaafd6cd4ad18eb0d515676f3efd4dbd7d5e5";
 
 //debuging
 console.log("senderAddr:", senderAddr);
@@ -110,50 +110,52 @@ async function execute() {
     }
 }
 
-async function fetchPrice(krypto) {
+async function fetchPrice() {
     try {
         console.log(senderAddr.address().toUint8Array());
-        let module_name;
+        //let module_name;
         let decimals;
-        switch(krypto){
+       /* switch(krypto){
           case "BTC":
-              module_name = "BitcoinOracle";
+          //    module_name = "BitcoinOracle";
               decimals = 1;
               number_in_list = 0;
               break;
           case "ETH":
-              module_name = "EthereumOracle";
+            //  module_name = "EthereumOracle";
               decimals = 2;
               number_in_list = 1;
               break;
           case "SOL":
-              module_name = "SolanaOracle";
+              //module_name = "SolanaOracle";
               decimals = 3;
               number_in_list = 2;
               break;
-        }
+        }*/
 
-        let data = await getPriceBybit(krypto);
+        let data = await getPriceBybit();
         //let lastPrice = data.result.list[0].lastPrice;
-        let priceData = data.parsed[number_in_list].price;
-        let correct_lastPrice = parseFloat(priceData.price) * Math.pow(10, priceData.expo);
-        console.log("Last price:", correct_lastPrice);
+        let priceDataBTC = data.parsed[0].price;
+        let priceDataETH = data.parsed[1].price;
+        let priceDataSOL = data.parsed[2].price;
+        let correct_lastPriceBTC = parseFloat(priceDataBTC.price) * Math.pow(10, priceDataBTC.expo);
+        let correct_lastPriceETH = parseFloat(priceDataETH.price) * Math.pow(10, priceDataETH.expo);
+        let correct_lastPriceSOL = parseFloat(priceDataSOL.price) * Math.pow(10, priceDataSOL.expo);
+        console.log("Last price sol:", correct_lastPriceSOL);
 
-        const priceValue = parseFloat(correct_lastPrice);
-        if (isNaN(priceValue)) {
-            throw new Error("Invalid price value received");
-        }
 
-        const scaledPrice = Math.round(priceValue *  Math.pow(10,decimals));
+        const scaledPriceBTC = Math.round(correct_lastPriceBTC *  Math.pow(10,1));
+        const scaledPriceETH = Math.round(correct_lastPriceETH *  Math.pow(10,2));
+        const scaledPriceSOL = Math.round(correct_lastPriceSOL *  Math.pow(10,3));
         console.log(validator);
         let initialTX = await newClient.createRawTxObject(
           validator.address(),
             (await newClient.getAccountInfo(validator.address())).sequence_number,
             contractAddress,
-            module_name,
-            "storeDATA",
+            "Writer",
+            "Write",
             [],
-            [BCS.bcsSerializeUint64(scaledPrice)]
+            [BCS.bcsSerializeUint64(scaledPriceBTC),BCS.bcsSerializeUint64(scaledPriceETH),BCS.bcsSerializeUint64(scaledPriceSOL)]
         );
         
         console.log("Initial TX:", initialTX);
