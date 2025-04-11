@@ -70,7 +70,7 @@ console.log(secret_key);
 console.log("this is admin");
 console.log(validator);
 
-const contractAddress = "0x8480994b8cdeb0b3c6136dcc65edaafd6cd4ad18eb0d515676f3efd4dbd7d5e5";
+const contractAddress = "0x5658f4d45001f71897f4a9d46a3cf05a651a2821568032553ca6063a2ea9601e";
 
 //debuging
 console.log("senderAddr:", senderAddr);
