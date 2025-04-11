@@ -50,8 +50,8 @@ async function getPriceBybit() {
     req.end();
   });
 }
-const secret_key = "ebc94789d9a9bd3a9f6ce040e0a77aa06a65b15cde2e59527010d563a9830c47";
-//const secret_key = process.env.SUPRA_SECRET_KEY;
+//const secret_key = "ebc94789d9a9bd3a9f6ce040e0a77aa06a65b15cde2e59527010d563a9830c47";
+const secret_key = process.env.SUPRA_SECRET_KEY;
 
 const newClient = new SupraClient("https://rpc-testnet.supra.com", 6);
 const senderAddr = new SupraAccount();
@@ -179,7 +179,7 @@ async function start() {
    // tento krok byl nejspis nutny, jelikoz render obraz restartuje servery (nejspis?, potreba vic otestovat?) - a musel bych ihned nastavit novou adresu validatora... (coz je nemozne)
    // proto jsem tedy musel implementovat jiz existujici adresu.
    // await fundAccount();
-    setInterval(fetchPrice(), 60000)
+   setInterval(() => fetchPrice(), 60000);
   } catch (error) {
       console.error("Main execution error:", error);
     }  
@@ -242,7 +242,7 @@ app.get('/nothing', async (req, res) => {
   // Dojde pri spusteni serveru, automaticky se zapne start cyklu
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
-  fetchPrice();
+  //fetchPrice();
   start();
   let nothing = Nothing();
   console.log(nothing);
