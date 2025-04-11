@@ -50,8 +50,8 @@ async function getPriceBybit() {
     req.end();
   });
 }
-//const secret_key = "0x576965b64a21f3c7eb562d7c26468119cb284bc745c907a5e8adac5f581a39f9";
-const secret_key = process.env.SUPRA_SECRET_KEY;
+const secret_key = "ebc94789d9a9bd3a9f6ce040e0a77aa06a65b15cde2e59527010d563a9830c47";
+//const secret_key = process.env.SUPRA_SECRET_KEY;
 
 const newClient = new SupraClient("https://rpc-testnet.supra.com", 6);
 const senderAddr = new SupraAccount();
@@ -165,6 +165,7 @@ async function fetchPrice() {
         
         console.log("Initial TX:", initialTX);
         TX = initialTX;
+        execute();
         return TX;
     } catch (error) {
         console.error("Error in fetchPrice:", error);
@@ -178,7 +179,7 @@ async function start() {
    // tento krok byl nejspis nutny, jelikoz render obraz restartuje servery (nejspis?, potreba vic otestovat?) - a musel bych ihned nastavit novou adresu validatora... (coz je nemozne)
    // proto jsem tedy musel implementovat jiz existujici adresu.
    // await fundAccount();
-    setInterval(main, 60000)
+    setInterval(fetchPrice(), 60000)
   } catch (error) {
       console.error("Main execution error:", error);
     }  
@@ -190,20 +191,6 @@ async function start() {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-async function main() {
-    try {
-        await fetchPrice("BTC");
-        await execute();
-        await sleep(10000);
-        await fetchPrice("ETH");
-        await execute();
-        await sleep(10000);
-        await fetchPrice("SOL");
-        await execute();
-    } catch (error) {
-        console.error("Main execution error:", error);
-    }
-}
 
 // dokumentace - https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Server-side/Express_Nodejs/Introduction
 const app = express();
@@ -234,7 +221,7 @@ app.get('/nothing', async (req, res) => {
 // API endpoint pro ulozeni cen vsech kryptomen (btc,eth,sol)
   app.get('/execute', async (req, res) => {
     try {
-      const data = await main();
+      const data = await fetchPrice();
       res.json({ data: data });
      }
     catch (error) {
@@ -255,8 +242,8 @@ app.get('/nothing', async (req, res) => {
   // Dojde pri spusteni serveru, automaticky se zapne start cyklu
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
-  main();
-  start();
+  fetchPrice();
+  //start();
   let nothing = Nothing();
   console.log(nothing);
 });
