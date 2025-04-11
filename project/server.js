@@ -255,8 +255,8 @@ app.get('/nothing', async (req, res) => {
   // Dojde pri spusteni serveru, automaticky se zapne start cyklu
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
- // main();
-  //start();
+  main();
+  start();
   let nothing = Nothing();
   console.log(nothing);
 });
