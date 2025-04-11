@@ -5,6 +5,11 @@ const { serialize } = require('v8');
 const https = require('https');
 
 
+async function Nothing(){
+  return 1;
+}
+
+
 async function getPriceBybit() {
   return new Promise((resolve, reject) => {
     const options = {
@@ -45,7 +50,7 @@ async function getPriceBybit() {
     req.end();
   });
 }
-//const secret_key = "0e67c6a62d530e9f86d865f4ad76ebc11d6d67b5d28e25d9dc31e4099e490125";
+//const secret_key = "0x576965b64a21f3c7eb562d7c26468119cb284bc745c907a5e8adac5f581a39f9";
 const secret_key = process.env.SUPRA_SECRET_KEY;
 
 const newClient = new SupraClient("https://rpc-testnet.supra.com", 6);
@@ -208,14 +213,24 @@ app.use(express.static('public'));
 
 // API endpoint pro zakladni funding uctu testnet tokeny
 app.get('/fund', async (req, res) => {
-    try {
-      const data = await fundAccount();
-      res.json({ data: data });
-     }
-    catch (error) {
-      res.status(500).json({ error: error.toString() });
-    }
-  });
+  try {
+    const data = await fundAccount();
+    res.json({ data: data });
+   }
+  catch (error) {
+    res.status(500).json({ error: error.toString() });
+  }
+});
+
+app.get('/nothing', async (req, res) => {
+  try {
+    const data = await Nothing();
+    res.json({ data: data });
+   }
+  catch (error) {
+    res.status(500).json({ error: error.toString() });
+  }
+});
 // API endpoint pro ulozeni cen vsech kryptomen (btc,eth,sol)
   app.get('/execute', async (req, res) => {
     try {
@@ -240,6 +255,8 @@ app.get('/fund', async (req, res) => {
   // Dojde pri spusteni serveru, automaticky se zapne start cyklu
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
-  main();
-  start();
+ // main();
+  //start();
+  let nothing = Nothing();
+  console.log(nothing);
 });
