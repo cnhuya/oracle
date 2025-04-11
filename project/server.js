@@ -45,8 +45,8 @@ async function getPriceBybit() {
     req.end();
   });
 }
-const secret_key = "0e67c6a62d530e9f86d865f4ad76ebc11d6d67b5d28e25d9dc31e4099e490125";
-//const secret_key = process.env.SUPRA_SECRET_KEY;
+//const secret_key = "0e67c6a62d530e9f86d865f4ad76ebc11d6d67b5d28e25d9dc31e4099e490125";
+const secret_key = process.env.SUPRA_SECRET_KEY;
 
 const newClient = new SupraClient("https://rpc-testnet.supra.com", 6);
 const senderAddr = new SupraAccount();
