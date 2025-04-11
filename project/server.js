@@ -243,7 +243,7 @@ app.get('/nothing', async (req, res) => {
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
   fetchPrice();
-  //start();
+  start();
   let nothing = Nothing();
   console.log(nothing);
 });
