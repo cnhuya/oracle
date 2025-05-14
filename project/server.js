@@ -224,8 +224,8 @@ app.use(express.static('public'));
 app.get('/view', async (req, res) => {
   try {
     const module = req.query.module;
-    if (!module || !['BitcoinOracle', 'EthereumOracle'].includes(module)) {
-      return res.status(400).json({ error: 'Invalid module specified. Use "BitcoinOracle" or "EthereumOracle".' });
+    if (!module || !['BitcoinOracle', 'EthereumOracle', 'SolanaOracle'].includes(module)) {
+      return res.status(400).json({ error: 'Invalid module specified. Use "BitcoinOracle" or "EthereumOracle" or "SolanaOracle".' });
     }
     const data = await fetchViewData(module);
     res.json({ data });
