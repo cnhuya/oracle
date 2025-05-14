@@ -50,7 +50,6 @@ async function getPriceBybit() {
     req.end();
   });
 }
-//const secret_key = "ebc94789d9a9bd3a9f6ce040e0a77aa06a65b15cde2e59527010d563a9830c47";
 const secret_key = process.env.SUPRA_SECRET_KEY;
 
 const newClient = new SupraClient("https://rpc-testnet.supra.com", 6);
@@ -70,7 +69,7 @@ console.log(secret_key);
 console.log("this is admin");
 console.log(validator);
 
-const contractAddress = "0x5658f4d45001f71897f4a9d46a3cf05a651a2821568032553ca6063a2ea9601e";
+const contractAddress = "0x9763cb18773902980a76c48818e48d7c2cd3470d120367d4333ebcfe340169ec";
 
 //debuging
 console.log("senderAddr:", senderAddr);
@@ -192,11 +191,48 @@ async function start() {
 }
 
 
+async function fetchViewData(module) {
+  try {
+    const functionArg = `0x9763cb18773902980a76c48818e48d7c2cd3470d120367d4333ebcfe340169ec::${module}::viewALLDATA`;
+    
+    const response = await fetch('https://rpc-testnet.supra.com/rpc/v2/view', {
+      method: 'POST',
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        "function": functionArg,
+        "type_arguments": [],
+        "arguments": []
+      })
+    });
+
+    return await response.json();
+  } catch (error) {
+    throw new Error("Error fetching data: " + error.toString());
+  }
+}
+
+
+
 // dokumentace - https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Server-side/Express_Nodejs/Introduction
 const app = express();
 const port = 3000;
 app.use(cors());
 app.use(express.static('public'));
+
+app.get('/view', async (req, res) => {
+  try {
+    const module = req.query.module;
+    if (!module || !['BitcoinOracle', 'EthereumOracle'].includes(module)) {
+      return res.status(400).json({ error: 'Invalid module specified. Use "BitcoinOracle" or "EthereumOracle".' });
+    }
+    const data = await fetchViewData(module);
+    res.json({ data });
+  } catch (error) {
+    res.status(500).json({ error: error.toString() });
+  }
+});
 
 // API endpoint pro zakladni funding uctu testnet tokeny
 app.get('/fund', async (req, res) => {
